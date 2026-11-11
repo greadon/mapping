@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StageMode Mapping · Stage designer</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <svg class="icon-definitions" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol><symbol id="icon-layers" viewBox="0 0 24 24"><path d="M3 3h18v18H3zM9 3v18"/></symbol><symbol id="icon-details" viewBox="0 0 24 24"><path d="M3 3h18v18H3zM15 3v18"/></symbol><symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol><symbol id="icon-select" viewBox="0 0 24 24"><path d="M5 3l14 9-7 1-3 7z"/></symbol><symbol id="icon-route" viewBox="0 0 24 24"><path d="M5 18V8a3 3 0 016 0v8a3 3 0 006 0V6M3 18h4M15 6h4"/></symbol><symbol id="icon-control" viewBox="0 0 24 24"><path d="M12 21s7-7 7-12a7 7 0 10-14 0c0 5 7 12 7 12zM9 9h6M12 6v6"/></symbol><symbol id="icon-junction" viewBox="0 0 24 24"><path d="M12 3v18M12 11L4 5M12 11l8-6"/></symbol><symbol id="icon-undo" viewBox="0 0 24 24"><path d="M9 5L4 10l5 5M4 10h10a6 6 0 016 6v3"/></symbol><symbol id="icon-redo" viewBox="0 0 24 24"><path d="M15 5l5 5-5 5M20 10H10a6 6 0 00-6 6v3"/></symbol><symbol id="icon-fit" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5M8 8h8v8H8z"/></symbol><symbol id="icon-finish" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></symbol><symbol id="icon-retry" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0112-1l2 3M4 15l2 3a7 7 0 0012-1"/></symbol><symbol id="icon-import" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 16v5h16v-5"/></symbol><symbol id="icon-export" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 16v5h16v-5"/></symbol><symbol id="icon-save" viewBox="0 0 24 24"><path d="M4 3h13l4 4v14H3V3zM7 3v6h10V3M7 21v-8h10v8"/></symbol><symbol id="icon-edit" viewBox="0 0 24 24"><path d="M15 5l4 4M4 20l4-1L20 7a2.8 2.8 0 00-4-4L4 15z"/></symbol><symbol id="icon-key" viewBox="0 0 24 24"><path d="M12 21s7-7 7-12a7 7 0 10-14 0c0 5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol><symbol id="icon-grip" viewBox="0 0 24 24"><path d="M8 5h.01M16 5h.01M8 12h.01M16 12h.01M8 19h.01M16 19h.01" stroke-width="4"/></symbol></defs></svg>
+  <section id="welcome" class="welcome">
+    <div class="intro"><p class="eyebrow">STAGE MAP DESIGNER</p><h1>Draw the route.<br>Place the controls.<br>Plan your stage.</h1><p>Build each stage in layers. Shape the route, mark controls and junctions, then bring in your StageMode marshal allocations.</p><button id="startLocal" class="primary" type="button">Start a map without signing in →</button><div class="intro-line"><span>01 / ROUTE</span><span>02 / CONTROLS</span><span>03 / LAYERS</span></div></div>
+    <form id="loginForm" class="login"><p class="eyebrow">OPTIONAL STAGEMODE CONNECTION</p><h2>Use your event stages</h2><p>Sign in to load stages and marshal references from StageMode.</p><label>Email address<input name="userid" type="email" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="primary" type="submit">Sign in to StageMode →</button><p id="loginError" role="alert"></p><button id="demo" type="button" class="secondary">Explore a demonstration</button><small>The demonstration uses fictional stages and people.</small></form>
+  </section>
+  <main id="workspace" hidden>
+    <div class="map-navigation" aria-label="Workspace controls">
+      <button id="openMenu" class="icon-button" type="button" aria-label="Open map menu" title="Open map menu" aria-controls="workspaceMenu" aria-expanded="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-menu"></use></svg></button>
+      <button id="toggleLayers" class="icon-button" type="button" aria-label="Toggle itinerary" title="Toggle itinerary" aria-controls="layersPanel" aria-expanded="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-layers"></use></svg></button>
+      <button id="toggleKey" class="icon-button" type="button" aria-label="Toggle key" title="Toggle key" aria-controls="keyPanel" aria-expanded="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-key"></use></svg></button>
+    </div>
+    <div class="history-tools" role="toolbar" aria-label="Undo and redo"><button id="undo" class="icon-button" type="button" aria-label="Undo" title="Undo" ><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-undo"></use></svg></button><button id="redo" class="icon-button" type="button" aria-label="Redo" title="Redo" ><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-redo"></use></svg></button></div>
+    <div id="notice" role="status" hidden></div>
+    <section id="mapTools" class="author-bar" aria-label="Map drawing tools" hidden>
+      <button id="tool-select" class="icon-button" type="button" aria-label="Deselect section" title="Close / deselect section" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button>
+      <button id="tool-route" class="icon-button" type="button" aria-label="Draw route" title="Draw route" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-route"></use></svg></button>
+      <div id="addPostDropdown" class="add-post-dropdown"><button id="tool-controls" type="button" class="add-post-button" aria-label="Add Post" aria-haspopup="menu" aria-expanded="false" aria-controls="addPostMenu">Add Post <span aria-hidden="true">▾</span></button><div id="addPostMenu" class="add-post-menu" role="menu" aria-label="Control type to add" hidden></div></div>
+      <button id="tool-junctions" type="button" hidden aria-hidden="true" tabindex="-1"></button>
+      <select id="controlKind" aria-label="Control type" hidden><option>Control</option><option>Time control</option><option>Start</option><option>Arrival</option><option>Flying finish</option><option>Stop</option></select>
+      <select id="routingMode" aria-label="Routing mode" hidden><option value="road">Snap to roads</option><option value="manual">Manual / tracks</option></select>
+      <button id="retryRoute" class="icon-button" type="button" aria-label="Retry snapping" title="Retry snapping" hidden><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-retry"></use></svg></button>
+      <button id="finishRoute" class="icon-button" type="button" aria-label="Finish route" title="Finish route" hidden><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-finish"></use></svg></button>
+      <button id="cancelRoute" class="icon-button" type="button" aria-label="Cancel edit" title="Cancel edit" hidden><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button>
+      <span class="tool-divider" aria-hidden="true"></span>
+      <button id="fit" class="icon-button" type="button" aria-label="Fit stage" title="Fit stage" ><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-fit"></use></svg></button>
+    </section>
+    <section class="explorer author-explorer">
+      <aside id="layersPanel" class="locations floating-panel" aria-label="Itinerary"><div class="panel-heading"><h2>Itinerary</h2><button id="closeLayers" class="icon-button" type="button" aria-label="Collapse itinerary" title="Collapse itinerary" ><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button></div><div class="stage-picker"><select id="stages" aria-label="Editing section" hidden></select><button id="newStage" hidden>+ Add section</button></div><div id="layerTree" class="layer-tree itinerary-list" aria-label="Itinerary sections"></div><details class="references"><summary>StageMode location &amp; marshal lookup</summary><label class="sr-only" for="search">Find a location or marshal</label><input id="search" type="search" placeholder="Location, marshal or call sign…"><div id="referenceList"></div></details></aside>
+      <aside id="keyPanel" class="floating-panel key-panel" aria-label="Map key" hidden><div class="panel-heading"><h2>Key</h2><button id="closeKey" class="icon-button" type="button" aria-label="Close key" title="Close key"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button></div><div id="keyControls"></div><div class="key-context"><label class="other-stages"><input id="otherStages" type="checkbox">Show full rally route</label></div></aside>
+      <div class="map-panel"><div id="map" aria-label="Stage drawing map"></div><div class="map-instruction" id="toolHint" role="status">Choose a stage to start drawing.</div></div>
+      <aside id="inspectorPanel" class="inspector-panel floating-panel" aria-label="Section details"><div class="panel-heading"><h2>Details</h2><button id="closeDetails" class="icon-button" type="button" aria-label="Collapse details" title="Collapse details" ><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button></div><div id="details" class="details"><p class="eyebrow">STAGE MAP</p><h2>Draw your route</h2><p>Choose Draw route and click points along the road.</p></div></aside>
+    </section>
+    <footer class="author-footer"><div><strong id="routeLength">0.00</strong> <span id="distanceUnit">km</span> in section <span>·</span> <strong id="controlCount">0</strong> controls <span>·</span> <strong id="junctionCount">0</strong> posts <span>·</span> <strong id="marshalCount">0</strong> marshals on stage</div><span id="rallyTotals"></span><span id="saveState">Drafts save in this browser</span></footer>
+  </main>
+  <dialog id="workspaceMenu" class="workspace-menu" aria-labelledby="menuTitle">
+    <div class="menu-heading"><div><p class="eyebrow">STAGEMODE</p><h2 id="menuTitle">Mapping</h2></div><button id="closeMenu" class="icon-button" type="button" aria-label="Close map menu" title="Close map menu" ><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button></div>
+<label for="eventName">Event name</label><input id="eventName" type="text" maxlength="120" placeholder="Enter event name"><fieldset id="mapUnits" class="map-unit-options"><legend>Units</legend><label><input id="unitsKm" type="radio" name="mapUnits" value="km" checked> Kilometers</label><label><input id="unitsMi" type="radio" name="mapUnits" value="mi"> Miles</label></fieldset>
+    <select id="events" aria-label="StageMode event" hidden></select>
+    <p class="mode" id="mode">Not connected</p><p id="updated"></p>
+    <nav class="menu-actions" aria-label="Map files and connection">
+      <button id="newMap" type="button"><span>＋</span><span>New map</span></button>
+      <button id="importMap" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-import"></use></svg><span>Import map</span></button>
+      <button id="exportGIS" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-export"></use></svg><span>Export rally GIS</span></button>
+      <button id="exportMap" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-export"></use></svg><span>Export map</span></button>
+      <button id="saveDraft" class="primary" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-save"></use></svg><span>Save draft</span></button>
+      <button id="refresh" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-retry"></use></svg><span>Refresh StageMode</span></button>
+    </nav>
+    <p class="menu-note">Drafts save in this browser. Export a map to keep a portable copy.</p>
+    <button id="logout" type="button" hidden>Sign out</button>
+    <input type="file" id="mapFile" accept=".json,application/json" hidden>
+  </dialog>
+  <dialog id="reuseStageDialog" class="new-map-dialog" aria-labelledby="reuseStageTitle">
+    <form id="reuseStageForm">
+      <h2 id="reuseStageTitle">Create linked stage</h2>
+      <p>Create a linked stage. Route, controls, posts and services stay in sync when either stage changes. Each run keeps its own name, speed and timings.</p>
+      <label>Stage name<input id="reuseStageName" type="text" maxlength="120" required></label>
+      <label>Leg<select id="reuseStageLeg"></select></label>
+      <div class="new-map-actions"><button id="cancelReuseStage" type="button">Cancel</button><button class="primary" type="submit">Create linked stage</button></div>
+    </form>
+  </dialog>
+  <dialog id="newMapDialog" class="new-map-dialog" aria-labelledby="newMapTitle" aria-describedby="newMapWarning">
+    <h2 id="newMapTitle">Create a new map?</h2>
+    <p id="newMapWarning">Export your current map first to avoid losing it. Creating a new map replaces the saved local map with a blank one.</p>
+    <button id="exportBeforeNewMap" type="button">Export current map</button>
+    <div class="new-map-actions"><button id="cancelNewMap" type="button" autofocus>Cancel</button><button id="confirmNewMap" class="primary" type="button">Create new map</button></div>
+  </dialog>
+
+</body>
+</html>
+

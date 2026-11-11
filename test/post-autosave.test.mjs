@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {StageEditor} from '../public/editor.js';
+import {emptyProject,emptyStage,History,validateProject} from '../public/draft.js';
+test('field changes save against their original post without rebuilding its form',()=>{
+  const project=emptyProject('event');project.stages.a={...emptyStage(),targetTime:'00:25'};project.stages.a.junctions=[{id:'one',name:'Post 1',number:1,kind:'Start',notes:'',locationId:'',point:[52,-3]}];
+  const editor=Object.create(StageEditor.prototype);let saved,saves=0;
+  Object.assign(editor,{history:new History(project),save(){saves++;saved=validateProject(this.project,'event');return true;},render(){throw Error('Typing must preserve the form');}});
+  editor.saveMarkerFields('a','junctions','one',{notes:'Access via gate',services:{radio:true,auxiliaryRadio:false,dataTracking:false,recovery:false,medic:true}});
+  assert.equal(saved.stages.a.junctions[0].notes,'Access via gate');assert.equal(saved.stages.a.junctions[0].services.medic,true);
+  editor.saveMarkerFields('a','junctions','one',{notes:'Access via gate'});assert.equal(saves,1);
+  editor.saveMarkerFields('a','junctions','missing',{notes:'Other'});assert.equal(saves,1);
+  editor.saveMarkerFields('a','junctions','one',{controlIdentifier:'TC1'});assert.equal(saved.stages.a.junctions[0].controlIdentifier,'TC1');assert.equal(saved.stages.a.targetTime,'00:25');
+  editor.saveMarkerFields('a','junctions','one',{predictedMarshals:4});assert.equal(saved.stages.a.junctions[0].predictedMarshals,4);
+  const invalid=structuredClone(saved);invalid.stages.a.junctions[0].predictedMarshals=1.5;assert.throws(()=>validateProject(invalid,'event'),/integer/);
+  invalid.stages.a.junctions[0].predictedMarshals=-1;assert.throws(()=>validateProject(invalid,'event'),/integer/);
+  editor.history.undo();
+  editor.history.undo();
+  editor.history.undo();assert.equal(editor.project.stages.a.junctions[0].notes,'');
+});
